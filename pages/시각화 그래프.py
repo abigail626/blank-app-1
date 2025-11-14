@@ -14,9 +14,22 @@ months = ['1월', '2월', '3월', '4월', '5월', '6월',
 sales = [450, 520, 480, 650, 720, 800, 
          950, 890, 720, 580, 650, 850]
 
+# 브랜드별 판매량 데이터
+sales_a = [450, 520, 480, 650, 720, 800, 950, 890, 720, 580, 650, 850]
+sales_b = [380, 450, 520, 580, 650, 720, 800, 750, 680, 550, 620, 780]
+sales_c = [320, 380, 420, 500, 580, 650, 700, 680, 620, 490, 550, 700]
+
 df = pd.DataFrame({
     '월': months,
     '판매량(개)': sales
+})
+
+# 브랜드별 비교 데이터프레임
+df_brand = pd.DataFrame({
+    '월': months,
+    'A치킨': sales_a,
+    'B치킨': sales_b,
+    'C치킨': sales_c
 })
 
 # 통계 정보 표시
@@ -33,7 +46,7 @@ with col4:
 st.divider()
 
 # 탭을 이용한 여러 그래프 표시
-tab1, tab2, tab3, tab4 = st.tabs(["📊 꺾은선 그래프", "📈 막대 그래프", "🔵 영역 그래프", "🎯 조합 그래프"])
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["📊 꺾은선 그래프", "📈 막대 그래프", "🔵 영역 그래프", "🎯 조합 그래프", "🏆 브랜드 경쟁", "📊 브랜드 비교"])
 
 # 1. 꺾은선 그래프
 with tab1:
@@ -100,6 +113,33 @@ with tab4:
     st.plotly_chart(fig_combo, use_container_width=True)
     
     st.info("💡 조합 그래프는 막대와 꺾은선을 함께 사용하여 데이터를 다각도로 분석합니다.")
+
+st.divider()
+
+# 5. 브랜드 경쟁 구도 (다중 꺾은선)
+with tab5:
+    fig_brand_line = px.line(df_brand, x='월', y=['A치킨', 'B치킨', 'C치킨'],
+                             title='브랜드별 월별 판매량 비교',
+                             markers=True,
+                             template='plotly_white')
+    fig_brand_line.update_traces(line=dict(width=3))
+    fig_brand_line.update_layout(hovermode='x unified', height=500)
+    fig_brand_line.for_each_trace(lambda t: t.update(name = t.name.replace("value=", "")))
+    st.plotly_chart(fig_brand_line, use_container_width=True)
+    
+    st.info("💡 각 브랜드의 시간별 판매량 추이를 한눈에 비교할 수 있습니다.")
+
+# 6. 브랜드별 막대 그래프 비교
+with tab6:
+    fig_brand_bar = px.bar(df_brand, x='월', y=['A치킨', 'B치킨', 'C치킨'],
+                           title='브랜드별 월별 판매량 비교 (막대)',
+                           barmode='group',
+                           template='plotly_white')
+    fig_brand_bar.update_layout(hovermode='x unified', height=500)
+    fig_brand_bar.for_each_trace(lambda t: t.update(name = t.name.replace("value=", "")))
+    st.plotly_chart(fig_brand_bar, use_container_width=True)
+    
+    st.info("💡 각 월별로 세 브랜드의 판매량을 직접 비교할 수 있습니다.")
 
 st.divider()
 
